@@ -1,0 +1,167 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Video Sync Player</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #181818;
+            color: #fff;
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        .textbox {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #303030;
+            border-radius: 4px;
+            background-color: #121212;
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .iframe-container {
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%;
+            position: relative;
+        }
+
+        .iframe-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+</head>
+
+<body>
+
+    <div class="container">
+        <input type="text" id="videoLink" class="textbox" placeholder="Paste YouTube video link here">
+        <div class="iframe-container">
+            <iframe id="videoFrame" src="" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <script>
+        var tag = document.createElement('script');
+        tag.id = 'iframe-demo';
+        tag.src = 'https://www.youtube.com/iframe_api';
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        const socket = io();
+
+
+        var player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('videoFrame', {
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            document.getElementById('videoFrame').style.borderColor = '#FF6D00';
+        }
+
+        var lastAction = "";
+        var ignoreStateChange = false;
+        function changeBorderColor(playerStatus) {
+            var color;
+            if (playerStatus == -1) {
+                color = "#37474F"; // unstarted = gray
+            } else if (playerStatus == 0) {
+                color = "#FFFF00"; // ended = yellow
+            } else if (playerStatus == 1) {
+                const currentTime = player.getCurrentTime();
+                if (lastAction !== 'play') {
+
+                    socket.emit("playTrack", {'isPlaying': true, time: currentTime})
+                    color = "#33691E"; // playing = green
+                    console.log("kelkweporkjwpoerjwpoejr");
+                    lastAction = "play"
+                }
+                
+            } else if (playerStatus == 2) {
+                if (lastAction != "pause") {
+
+                    const currentTime = player.getCurrentTime();
+                    socket.emit("pauseTrack", {'isPlaying': false, time: currentTime})
+                    color = "#DD2C00"; // paused = red
+                    lastAction = false;
+                }
+            } else if (playerStatus == 3) {
+                color = "#AA00FF"; // buffering = purple
+            } else if (playerStatus == 5) {
+                color = "#FF6DOO"; // video cued = orange
+            }
+            console.log(color);
+            
+            if (color) {
+                document.body.style.backgroundColor = color;
+            }
+        }
+        function onPlayerStateChange(event) {
+            changeBorderColor(event.data);
+        }
+
+        const videoFrame = document.getElementById('videoFrame');
+
+        // Handle incoming video state from the server
+        socket.on('setTrack', (data) => {
+            const videoUrl = `https://www.youtube.com/embed/${data.track}?enablejsapi=1`;
+            videoFrame.src = videoUrl
+        });
+
+        
+
+        // Handle pause event
+        socket.on('pauseTrack', (data) => {
+            player.seekTo(data.time, true);
+            player.pauseVideo();
+        });
+
+        socket.on('playTrack', (data)  => {
+            player.seekTo(data.time, true);
+            player.playVideo();
+        })
+
+        document.getElementById('videoLink').addEventListener('input', function () {
+            const url = this.value;
+            console.log(url);
+
+            const videoId = url.split('v=')[1]?.split('&')[0] || '';
+            if (videoId) {
+                socket.emit('setTrack', { track: videoId });
+            }
+        });
+    </script>
+
+</body>
+
+</html>
+ -->

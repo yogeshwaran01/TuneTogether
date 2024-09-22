@@ -1,0 +1,19 @@
+.video-link-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.video-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.video-details {
+  flex-grow: 1;
+  padding-left: 10px;
+}
+
+.button {
+  margin-left: 10px;
+}
