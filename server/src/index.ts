@@ -1,12 +1,11 @@
-import { join } from "path";
-import { Server as IO } from "socket.io";
+import cors from "cors";
+import * as dotenv from "dotenv";
 import express, { Express } from "express";
 import { createServer, Server } from "http";
-import * as dotenv from "dotenv";
-import cors from "cors";
-import { teamRouter } from "./team/team.router";
-import { ClientEvents, SeverEvents } from "../../common/socket"
+import { Server as IO } from "socket.io";
 import { PlayerState } from "../../common/PlayerState";
+import { ClientEvents, Room, SeverEvents, Video } from "../../common/socket";
+import { teamRouter } from "./team/team.router";
 
 dotenv.config();
 const port = process.env.PORT;
@@ -20,7 +19,7 @@ const io = new IO<ClientEvents, SeverEvents>(server, {
   }
 });
 
-app.use((req, res, next) => {
+app.use((_req, res, next) => {
   res.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self' https://cdn.socket.io https://www.youtube.com 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; frame-src 'self' https://www.youtube.com");
   next();
 });
@@ -40,11 +39,23 @@ const playerState: PlayerState = {
   track: ""
 };
 
+let playList: Video[] = [];
+
 io.on("connection", (socket) => {
 
   if (playerState.track != "") {
     socket.emit("track:setted", playerState);
   }
+
+  if (playList.length != 0) {
+    socket.emit("playlist:loaded", playList);
+
+  }
+
+  socket.on("room:create", (data: Room) => {
+    socket.join(data.id);
+    
+  })
 
   socket.on("track:set", (data) => {
     playerState.track = data.track;
@@ -63,13 +74,21 @@ io.on("connection", (socket) => {
     io.emit("track:paused", playerState);
   });
 
-  socket.on("playlist:add", (data) => {
+  socket.on("playlist:add", (data: Video) => {
+    playList.push(data);
     io.emit('playlist:added', data);
   })
 
-  socket.on("playlist:remove", (data) => {
+  socket.on("playlist:remove", (data: Video) => {
+    playList = playList.filter(v => v.id !== data.id);
     io.emit("playlist:removed", data);
-  })
+  });
+
+  socket.on("playlist:load", (data: Video[]) => {
+    playList = data;
+    io.emit("playlist:loaded", data);
+  });
+
 })
 
 

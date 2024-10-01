@@ -1,14 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { ListboxModule } from "primeng/listbox"
+import { ListboxModule } from "primeng/listbox";
+import { OrderListModule } from "primeng/orderlist";
 import { Video } from '../../../../common/socket';
 import { PlaylistService } from '../../services/playlist.service';
-import { OrderList, OrderListModule } from "primeng/orderlist"
-
-
 
 @Component({
     selector: 'playlist',
@@ -34,18 +32,20 @@ export class PlaylistComponent implements OnInit {
     @Output() onAdd = new EventEmitter<Video>();
     @Output() onRemove = new EventEmitter<Video>();
     @Output() onSelect = new EventEmitter<Video>();
+    @Output() onReorder = new EventEmitter<Video[]>();
 
     youtubeUrl: string = '';
     videoList: Video[] = [];
     selectedVideo: Video | null = null;
 
-    constructor(private playlistService: PlaylistService, private cd: ChangeDetectorRef)
-    {
+    constructor(private playlistService: PlaylistService) {
 
     }
 
     ngOnInit(): void {
-        this.videoList = this.playlistService.getVideos();
+        this.playlistService.getVideos().subscribe((vs: Video[]) => {
+            this.videoList = vs;
+        });
     }
 
     addVideo() {
@@ -60,20 +60,19 @@ export class PlaylistComponent implements OnInit {
         }
         this.onAdd.emit(video);
         this.youtubeUrl = '';
-        this.videoList = this.playlistService.getVideos();
-        this.cd.detectChanges();
     }
 
     removeVideo(video: Video) {
         this.onRemove.emit(video);
-        this.videoList = this.playlistService.getVideos();
-        this.cd.detectChanges();
 
     }
 
-    selectVideo(event: any) {
-        //const selectedVideo: Video = event.value as Video;
+    selectVideo(event: Video) {
         this.onSelect.emit(event);
+    }
+
+    handleReorder(_event: any) {
+        this.onReorder.emit(this.videoList);
     }
 
     private getYoutubeVideoId(url: string): string | null {

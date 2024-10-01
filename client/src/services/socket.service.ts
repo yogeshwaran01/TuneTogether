@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
-import { io, Socket } from "socket.io-client"
-import { SeverEvents as ServerEvents, ClientEvents, Video } from "../../../common/socket"
-import { YoutubePlayerService } from "./youtube-player.service";
+import { io, Socket } from "socket.io-client";
 import { PlayerState } from "../../../common/PlayerState";
+import { ClientEvents, Room, SeverEvents as ServerEvents, Video } from "../../../common/socket";
 import { PlaylistService } from "./playlist.service";
+import { YoutubePlayerService } from "./youtube-player.service";
 
 @Injectable({
     providedIn: 'root'
@@ -35,8 +35,7 @@ export class SocketService {
         });
     }
 
-    private _addPlaylistEvents()
-    {
+    private _addPlaylistEvents() {
         this.socket.on("playlist:added", ((video: Video) => {
             this.playlistService.addVideo(video);
         }));
@@ -44,26 +43,38 @@ export class SocketService {
         this.socket.on("playlist:removed", ((video: Video) => {
             this.playlistService.removeVideo(video);
         }));
+
+        this.socket.on("playlist:loaded", ((videos: Video[]) => {
+            this.playlistService.loadPlaylist(videos);
+        }));
     }
 
-    EmitPlay() {
-        this.socket.emit("track:play", { isPlaying: true, time: this.playerService.getCurrentTime() }, (res) => { });
+    emitPlaying() {
+        this.socket.emit("track:play", { isPlaying: true, time: this.playerService.getCurrentTime() }, () => { });
     }
 
-    EmitPause() {
-        this.socket.emit("track:pause", { isPlaying: false, time: this.playerService.getCurrentTime() }, (res) => { });
+    emitPaused() {
+        this.socket.emit("track:pause", { isPlaying: false, time: this.playerService.getCurrentTime() }, () => { });
     }
 
-    EmitTrack(id: string) {
-        this.socket.emit("track:set", { track: id }, (res) => { });
+    emitTrack(id: string) {
+        this.socket.emit("track:set", { track: id }, () => { });
     }
 
-    EmitPlaylistAdd(video: Video) {
-        this.socket.emit("playlist:add", video, (res) => { });
+    emitPlaylistAdd(video: Video) {
+        this.socket.emit("playlist:add", video, () => { });
 
     }
 
-    EmitPlaylistRemove(video: Video) {
-        this.socket.emit("playlist:remove", video, (res) => { });
+    emitPlaylistRemove(video: Video) {
+        this.socket.emit("playlist:remove", video, () => { });
+    }
+
+    emitPlaylistLoaded(videos: Video[]) {
+        this.socket.emit("playlist:load", videos, () => { });
+    }
+
+    emitJoinRoom(room: Room) {
+        this.socket.emit("room:create", room, () => {});
     }
 }

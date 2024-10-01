@@ -1,23 +1,23 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
 })
 export class YoutubePlayerService {
 
-    private player: any; 
+    private player: any;
 
-    public isPlayerReady : BehaviorSubject<boolean> = new BehaviorSubject(false);
+    public isPlayerReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
     loadVideoById(videoId: string) {
         console.log(this.player);
         this.isPlayerReady.subscribe((isReady: boolean) => {
             if (this.player) {
-              this.player.loadVideoById(videoId);
+                this.player.loadVideoById(videoId);
             }
         })
-      }
+    }
 
     initializePlayer(player: any) {
         this.player = player;

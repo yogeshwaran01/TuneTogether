@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { YoutubePlayerComponent } from '../Player/YoutubePlayer.component';
-import { YoutubePlayerService } from '../../services/youtube-player.service';
-import { VideoState } from '../../enum/VideoState';
-import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { SocketService } from '../../services/socket.service';
-import { PlaylistComponent } from "../Playlist/Playlist.component";
+import { InputTextModule } from 'primeng/inputtext';
 import { Video } from '../../../../common/socket';
+import { VideoState } from '../../enum/VideoState';
+import { SocketService } from '../../services/socket.service';
+import { YoutubePlayerService } from '../../services/youtube-player.service';
+import { PlaylistComponent } from "../Playlist/Playlist.component";
+import { YoutubePlayerComponent } from '../YoutubePlayer/YoutubePlayer.component';
 
 @Component({
   selector: 'synced-player',
@@ -44,13 +44,13 @@ export class SyncedPlayerComponent implements OnInit {
     switch (state) {
       case VideoState.PLAYING:
         if (this.lastAction !== 'play') {
-          this.socketService.EmitPlay();
+          this.socketService.emitPlaying();
           this.lastAction = "play";
         }
         break;
       case VideoState.PAUSED:
         if (this.lastAction !== 'pause') {
-          this.socketService.EmitPause();
+          this.socketService.emitPaused();
           this.lastAction = "pause";
         }
         break;
@@ -59,21 +59,16 @@ export class SyncedPlayerComponent implements OnInit {
     }
   }
 
-  Play()
-  {
-    
-  }
-
   OnAdd(video: Video)
   {
     console.log("Added", video);
-    this.socketService.EmitPlaylistAdd(video);
+    this.socketService.emitPlaylistAdd(video);
   }
 
   OnRemove(video: Video)
   {
     console.log("Removed", video);
-    this.socketService.EmitPlaylistRemove(video);
+    this.socketService.emitPlaylistRemove(video);
   }
 
   OnSelect(video: Video)
@@ -82,7 +77,12 @@ export class SyncedPlayerComponent implements OnInit {
     this.playerService.isPlayerReady.subscribe((isReady: boolean) => {
       if (!isReady) { return; }
       this.playerService.loadVideoById(video.id);
-      this.socketService.EmitTrack(video.id);
+      this.socketService.emitTrack(video.id);
     }) 
+  }
+
+  OnReorder(videos: Video[])
+  {
+    this.socketService.emitPlaylistLoaded(videos);
   }
 }

@@ -1,3 +1,4 @@
-
-<youtube-player [autoPlay]="true" [showControls]="showControls" (onPlayerStateChange)="HandleVideoStateChanges($event)"></youtube-player>
-<playlist [allowAdd]="true" [allowRemove]="true" [allowSelect]="true" (onAdd)="OnAdd($event)" (onRemove)="OnRemove($event)" (onSelect)="OnSelect($event)"></playlist>
+<youtube-player [autoPlay]="true" [showControls]="showControls"
+    (onPlayerStateChange)="HandleVideoStateChanges($event)"></youtube-player>
+<playlist [allowAdd]="true" [allowRemove]="true" [allowSelect]="true" (onAdd)="OnAdd($event)"
+    (onRemove)="OnRemove($event)" (onSelect)="OnSelect($event)" (onReorder)="OnReorder($event)"></playlist>

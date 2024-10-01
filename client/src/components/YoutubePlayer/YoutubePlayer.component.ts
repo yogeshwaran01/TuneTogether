@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { YoutubePlayerService } from '../../services/youtube-player.service';
 import { VideoState } from '../../enum/VideoState';
+import { YoutubePlayerService } from '../../services/youtube-player.service';
 
 @Component({
   selector: 'youtube-player',
@@ -14,8 +14,7 @@ import { VideoState } from '../../enum/VideoState';
 })
 export class YoutubePlayerComponent implements OnInit {
 
-  constructor(private playerService: YoutubePlayerService)
-  {
+  constructor(private playerService: YoutubePlayerService) {
 
   }
 
@@ -27,6 +26,9 @@ export class YoutubePlayerComponent implements OnInit {
   @Input() showControls: Boolean = true;
   @Input() autoPlay: Boolean = true;
 
+  /**
+   * Implements OnInit
+   */
   ngOnInit() {
     if ((window as any).YT && (window as any).YT.Player) {
       this.createPlayer();
@@ -43,22 +45,21 @@ export class YoutubePlayerComponent implements OnInit {
       width: '640',
       playerVars: {
         enablejsapi: 1,
-        controls: this.showControls ? 1: 0,
+        controls: this.showControls ? 1 : 0,
         autoplay: this.autoPlay ? 1 : 0,
         rel: 0
       },
       events: {
         'onReady': (event: any) => {
           this.onPlayerReady.emit(event);
-          this.playerService.initializePlayer(player); 
+          this.playerService.initializePlayer(player);
         },
         'onStateChange': (event: any) => this.onPlayerStateChange.emit(this._getPlayerState(event.data))
       }
     });
   }
 
-  private _getPlayerState(state: any): VideoState
-  {
+  private _getPlayerState(state: any): VideoState {
     const stateNumber: number = state as number;
     switch (stateNumber) {
       case -1:
@@ -67,8 +68,8 @@ export class YoutubePlayerComponent implements OnInit {
         return VideoState.ENDED;
       case 1:
         return VideoState.PLAYING;
-        case 2:
-          return VideoState.PAUSED;
+      case 2:
+        return VideoState.PAUSED;
       case 3:
         return VideoState.BUFFERING;
       case 5:

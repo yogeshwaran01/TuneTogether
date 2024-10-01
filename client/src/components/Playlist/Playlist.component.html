@@ -1,19 +1,17 @@
 <div class="video-link-list">
-    
-    <input type="text"  *ngIf="allowAdd" pInputText [(ngModel)]="youtubeUrl" />
-    <p-button class="button" *ngIf="allowAdd"  label="Add Video" (onClick)="addVideo()"></p-button>
-  
-    <p-orderList [value]="videoList" [metaKeySelection]="true"   *ngIf="videoList.length > 0 && allowSelect">
-      <ng-template let-video pTemplate="item">
-        <div class="video-item">
-          <img [src]="video.thumbnail" alt="Video Thumbnail" width="50">
-          <div class="video-details">
-            <span>{{ video.title }}</span>
-            <p-button class="button" *ngIf="allowRemove"  icon="pi pi-times" (onClick)="removeVideo(video)"></p-button>
-            <p-button class="button" icon="pi pi-play" (onClick)="selectVideo(video)"></p-button>
-          </div>
+  <input type="text" *ngIf="allowAdd" pInputText [(ngModel)]="youtubeUrl" />
+  <p-button class="button" *ngIf="allowAdd" label="Add Video" (onClick)="addVideo()"></p-button>
+  <p-orderList [value]="videoList" [metaKeySelection]="true" [dragdrop]="true" (onReorder)="handleReorder($event)"
+    *ngIf="videoList.length > 0 && allowSelect">
+    <ng-template let-video pTemplate="item">
+      <div class="video-item">
+        <img [src]="video.thumbnail" alt="Video Thumbnail" width="50">
+        <div class="video-details">
+          <span>{{ video.title }}</span>
+          <p-button class="button" *ngIf="allowRemove" icon="pi pi-times" (onClick)="removeVideo(video)"></p-button>
+          <p-button class="button" icon="pi pi-play" (onClick)="selectVideo(video)"></p-button>
         </div>
-      </ng-template>
-    </p-orderList>
-  </div>
-  
+      </div>
+    </ng-template>
+  </p-orderList>
+</div>

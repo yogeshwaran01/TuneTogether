@@ -25,6 +25,11 @@ export interface ClientEvents {
     // PlaylistEvents
     "playlist:add": (video: Video, callback: (res: Response<Video>) => void) => void;
     "playlist:remove": (video: Video, callback: (res: Response<Video>) => void) => void;
+    "playlist:load": (Videos: Video[], callback: (res: Response<Video>) => void) => void;
+
+    // Room
+    "room:create": (room: Room, callback: (res: Response<Room>) => void) => void;
+
 }
 
 export interface SeverEvents {
@@ -34,6 +39,13 @@ export interface SeverEvents {
 
     "playlist:added": (video: Video) => void;
     "playlist:removed": (Video: Video) => void;
+    "playlist:loaded": (Videos: Video[]) => void;
+
+    "room:created": (room: Room) => void;
+}
+
+export interface Room {
+    id: string;
 }
 
 export interface Video {
@@ -41,4 +53,20 @@ export interface Video {
     thumbnail: string;
     url: string;
     id: string;
+}
+
+export interface RVideo extends Video {
+    room: Room;
+}
+
+export interface RPlayerState extends PlayerState
+{
+    room: Room;
+}
+
+export interface AppState
+{
+    playerState: PlayerState;
+    videos: Video[],
+    room: Room
 }

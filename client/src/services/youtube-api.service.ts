@@ -7,8 +7,7 @@ export class YoutubeApiService {
 
     private apiLoaded = false;
 
-    constructor() 
-    {
+    constructor() {
         this.loadYouTubeAPI();
     }
 
