@@ -3,6 +3,7 @@ import * as dotenv from "dotenv";
 import express, { Express } from "express";
 import { createServer, Server } from "http";
 import { Server as IO } from "socket.io";
+import { Config } from "../../common/config";
 import { PlayerState } from "../../common/PlayerState";
 import { ClientEvents, Room, SeverEvents, Video } from "../../common/socket";
 import { teamRouter } from "./team/team.router";
@@ -14,7 +15,7 @@ export const app: Express = express();
 export const server: Server = createServer(app);
 const io = new IO<ClientEvents, SeverEvents>(server, {
   cors: {
-    origin: "http://localhost:4200",
+    origin: Config.CLIENT_URL,
     methods: ["GET", "POST"]
   }
 });
@@ -26,7 +27,7 @@ app.use((_req, res, next) => {
 
 
 app.use(cors({
-  origin: 'http://localhost:4200'
+  origin: Config.CLIENT_URL,
 }));
 app.use(express.json());
 app.use("/team", teamRouter);

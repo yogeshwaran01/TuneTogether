@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import { io, Socket } from "socket.io-client";
+import { Config } from "../../../common/config";
 import { PlayerState } from "../../../common/PlayerState";
 import { ClientEvents, Room, SeverEvents as ServerEvents, Video } from "../../../common/socket";
 import { PlaylistService } from "./playlist.service";
@@ -16,7 +17,7 @@ export class SocketService {
         private playlistService: PlaylistService,
         private roomService: RoomService,
     ) {
-        this.socket = io("http://localhost:3000");
+        this.socket = io(Config.SERVER_URL);
         this._addTrackEvents();
         this._addPlaylistEvents();
         this._addRoomEvents();
