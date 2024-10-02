@@ -11,8 +11,7 @@ export class YoutubePlayerService {
     public isPlayerReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
     loadVideoById(videoId: string) {
-        console.log(this.player);
-        this.isPlayerReady.subscribe((isReady: boolean) => {
+        this.isPlayerReady.subscribe(() => {
             if (this.player) {
                 this.player.loadVideoById(videoId);
             }

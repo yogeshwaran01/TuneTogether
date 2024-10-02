@@ -31,4 +31,8 @@ export class PlaylistService {
   loadPlaylist(videos: Video[]): void {
     this.playlistSubject.next(videos);
   }
+
+  clearPlaylist(): void { 
+    this.playlistSubject.next([]);
+  }
 }

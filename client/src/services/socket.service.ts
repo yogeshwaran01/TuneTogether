@@ -3,6 +3,7 @@ import { io, Socket } from "socket.io-client";
 import { PlayerState } from "../../../common/PlayerState";
 import { ClientEvents, Room, SeverEvents as ServerEvents, Video } from "../../../common/socket";
 import { PlaylistService } from "./playlist.service";
+import { RoomService } from "./room.service";
 import { YoutubePlayerService } from "./youtube-player.service";
 
 @Injectable({
@@ -13,10 +14,12 @@ export class SocketService {
 
     constructor(private playerService: YoutubePlayerService,
         private playlistService: PlaylistService,
+        private roomService: RoomService,
     ) {
         this.socket = io("http://localhost:3000");
         this._addTrackEvents();
         this._addPlaylistEvents();
+        this._addRoomEvents();
     }
 
     private _addTrackEvents() {
@@ -49,32 +52,57 @@ export class SocketService {
         }));
     }
 
+    private _addRoomEvents() {
+        this.socket.on("room:added", (room: Room) => {
+            this.roomService.updateMembers(room.members);
+        });
+
+        this.socket.on("room:exited", (room: Room) => { 
+            this.roomService.updateMembers(room.members);
+        });
+    }
+
     emitPlaying() {
-        this.socket.emit("track:play", { isPlaying: true, time: this.playerService.getCurrentTime() }, () => { });
+        const room: Room | null = this.roomService.getRoom();
+        if (!room) { return; }
+        this.socket.emit("track:play", { isPlaying: true, time: this.playerService.getCurrentTime() }, room, () => { });
     }
 
     emitPaused() {
-        this.socket.emit("track:pause", { isPlaying: false, time: this.playerService.getCurrentTime() }, () => { });
+        const room: Room | null = this.roomService.getRoom();
+        if (!room) { return; }
+        this.socket.emit("track:pause", { isPlaying: false, time: this.playerService.getCurrentTime() }, room, () => { });
     }
 
     emitTrack(id: string) {
-        this.socket.emit("track:set", { track: id }, () => { });
+        const room: Room | null = this.roomService.getRoom();
+        if (!room) { return; }
+        this.socket.emit("track:set", { track: id }, room, () => { });
     }
 
     emitPlaylistAdd(video: Video) {
-        this.socket.emit("playlist:add", video, () => { });
-
+        const room: Room | null = this.roomService.getRoom();
+        if (!room) { return; }
+        this.socket.emit("playlist:add", video, room, () => { });
     }
 
     emitPlaylistRemove(video: Video) {
-        this.socket.emit("playlist:remove", video, () => { });
+        const room: Room | null = this.roomService.getRoom();
+        if (!room) { return; }
+        this.socket.emit("playlist:remove", video, room, () => { });
     }
 
     emitPlaylistLoaded(videos: Video[]) {
-        this.socket.emit("playlist:load", videos, () => { });
+        const room: Room | null = this.roomService.getRoom();
+        if (!room) { return; }
+        this.socket.emit("playlist:load", videos, room, () => { });
     }
 
     emitJoinRoom(room: Room) {
-        this.socket.emit("room:create", room, () => {});
+        this.socket.emit("room:create", room, () => { });
+    }
+
+    emitLeaveRoom(room: Room) {
+        this.socket.emit("room:exit", room, () => { });
     }
 }
