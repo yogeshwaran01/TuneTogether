@@ -17,7 +17,7 @@ import { SyncedPlayerComponent } from '../SyncedPlayer/SyncedPlayer.component';
         , InputTextModule, FormsModule, SyncedPlayerComponent
     ],
     templateUrl: "./RoomManager.component.html",
-    styleUrl: './RoomManager.component.css',
+    styleUrl: './RoomManager.component.scss',
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class RoomManagerComponent implements OnInit {

@@ -1,0 +1,9 @@
+@import url(../../assets/styles/variables.scss);
+
+:host {
+  display: block;
+}
+
+.room-manager-container {
+  margin-top: $header-height;
+}
