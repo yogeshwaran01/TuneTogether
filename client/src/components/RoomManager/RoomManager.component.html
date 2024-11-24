@@ -1,17 +1,19 @@
-<div *ngIf="!isJoined">
-    <input type="text" pInputText [(ngModel)]="roomId" [placeholder]="'Enter the room ID'" />
-    <input type="text" pInputText [(ngModel)]="userName" [placeholder]="'Enter your Name'" />
-    <p-button class="button" label="Join" (onClick)="join()"></p-button>
-</div>
-
-<div *ngIf="isJoined">
-    {{ userName }} joined room {{ roomId }}
-    <p-button class="button" label="Leave" (onClick)="leave()"></p-button>
-    <div *ngIf="members.length > 0">
-        <h3>Room Members</h3>
-        <ul>
-            <li *ngFor="let member of members">{{ member }}</li>
-        </ul>
+<div class="room-manager-container">
+    <div *ngIf="!isJoined">
+        <input type="text" pInputText [(ngModel)]="roomId" [placeholder]="'Enter the room ID'" />
+        <input type="text" pInputText [(ngModel)]="userName" [placeholder]="'Enter your Name'" />
+        <p-button class="button" label="Join" (onClick)="join()"></p-button>
     </div>
-    <synced-player></synced-player>
+    
+    <div *ngIf="isJoined">
+        {{ userName }} joined room {{ roomId }}
+        <p-button class="button" label="Leave" (onClick)="leave()" icon="pi pi-sign-out"></p-button>
+        <div *ngIf="members.length > 0">
+            <h3>Room Members</h3>
+            <ul>
+                <li *ngFor="let member of members">{{ member }}</li>
+            </ul>
+        </div>
+        <synced-player></synced-player>
+    </div>
 </div>

@@ -1,0 +1,17 @@
+/* Reset some default margins and padding */
+* {
+    box-sizing: border-box;
+}
+
+/* Basic font and background settings */
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #121212;
+    font-family: Poppins;
+    font-size: 16px;
+    font-weight: 400;
+    font-style: normal;
+    line-height: normal;
+    color: #ffffff;
+}
